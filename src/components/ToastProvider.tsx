@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { toastSystem } from "@/lib/toastEvent";
+import { toastSystem, ToastType } from "@/lib/toastEvent";
 import { Terminal, ShieldCheck, Cpu } from "lucide-react";
 
 interface ToastData {
-  id: string; // Changed from number to string for UUID support
+  id: string;
   message: string;
-  type: "info" | "success" | "atomic";
+  type: ToastType;
 }
 
 export default function ToastProvider() {
@@ -15,20 +15,19 @@ export default function ToastProvider() {
 
   useEffect(() => {
     const unsubscribe = toastSystem.subscribe((message, type = "info") => {
-      // ⚡ FIX: Use randomUUID instead of Date.now() to avoid collision duplicate keys
       const id =
         typeof crypto !== "undefined" && crypto.randomUUID
           ? crypto.randomUUID()
-          : `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          : `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
       setToasts((prev) => [...prev, { id, message, type }]);
 
-      // Auto dismiss each toast after 4 seconds safely checking by unique ID string
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
       }, 4000);
     });
 
+    // Clean, direct unmount reference mapping safely returning void
     return () => unsubscribe();
   }, []);
 
@@ -36,7 +35,7 @@ export default function ToastProvider() {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 w-full max-w-sm pointer-events-none">
       {toasts.map((toast) => (
         <div
-          key={toast.id} // This key is now guaranteed to be globally unique
+          key={toast.id}
           className="animate-slide-up pointer-events-auto flex items-start gap-3 p-4 bg-neutral-900/90 backdrop-blur-md border border-neutral-800 rounded-xl shadow-2xl transition-all duration-300"
         >
           {toast.type === "atomic" && (
