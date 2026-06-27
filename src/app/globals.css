@@ -1,26 +1,81 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --animate-slide-up: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @keyframes slideUp {
+    from {
+      transform: translateY(1rem);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------- */
+/* OR: If your file is using standard CSS/Tailwind v3 injection */
+/* ------------------------------------------------------------- */
+@layer utilities {
+  .animate-slide-up {
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+/* Custom Scrollbar Architecture for Modern Browsers (Chrome, Safari, Edge, Opera) */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the vertical scrollbar */
+  height: 8px; /* Height of the horizontal scrollbar */
+}
+
+/* The background track of the scrollbar */
+::-webkit-scrollbar-track {
+  background: #0a0a0a; /* Matching your bg-neutral-950 color baseline */
+}
+
+/* The draggable scroll handle/thumb */
+::-webkit-scrollbar-thumb {
+  background: #262626; /* Subdued tracking handle (neutral-800) */
+  border-radius: 9999px; /* Fully pill-rounded sleek borders */
+  border: 2px solid #0a0a0a; /* Creates an elegant visual padding gap around the thumb */
+}
+
+/* Interactive hover state for the scroll handle */
+::-webkit-scrollbar-thumb:hover {
+  background: #f59e0b; /* Transitions cleanly into your accent amber-500 color on hover */
+}
+
+/* Firefox Support Parameters */
+@supports (scrollbar-width: thin) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #262626 #0a0a0a;
+  }
+}
+
+/* Add this class utility rule to globals.css */
+.custom-minimal-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-minimal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-minimal-scroll::-webkit-scrollbar-thumb {
+  background: #404040; /* neutral-700 */
+  border-radius: 4px;
 }
