@@ -90,7 +90,7 @@ vaisheshika-web/
 Clone the repository and install the verified computational dependency tracks:
 
 ```Bash
-git clone [https://github.com/your-username/vaisheshika-core.git](https://github.com/your-username/vaisheshika-core.git)
+git clone https://github.com/krishnasai89/Vaisheshika.git
 cd vaisheshika-core
 pnpm install
 ```
@@ -119,6 +119,7 @@ pnpm start
 ## 📜 Philosophical Axiom Reference
 
 क्रियागुणवत्समवायिकारणमिति द्रव्यलक्षणम्॥
+
 "The definition of Substance is that it possesses actions and qualities, and is an inherent, material cause." — Vaiśeṣika Sūtra 1.1.15
 
 This software treats codebase files as Substances (Dravyas), styles and states as Qualities (Gunas), and actions or routes as Kinetic Motions (Karmas) to manifest a cohesive, calculable digital reality.
