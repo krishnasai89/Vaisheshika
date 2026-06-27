@@ -6,13 +6,21 @@ export default function AtomCursor() {
   const [position, setPosition] = useState({ x: -100, y: -100 });
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Refs for tracking smooth physics interpolation (lagging electron rings)
   const electron1Ref = useRef({ x: 0, y: 0 });
   const electron2Ref = useRef({ x: 0, y: 0 });
   const requestRef = useRef<number | null>(null);
 
+  // Hydration guard lock
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     // Hide the native system cursor globally
     document.documentElement.style.cursor = "none";
 
@@ -25,7 +33,8 @@ export default function AtomCursor() {
     `;
     document.head.appendChild(injectCursorStyles);
 
-    const handleMouseMove = (e: MouseMoveEvent) => {
+    // ⚡ FIX: Uses standard Web API MouseEvent instead of nonexistent MouseMoveEvent
+    const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
       if (!isVisible) setIsVisible(true);
     };
@@ -84,35 +93,36 @@ export default function AtomCursor() {
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
       window.removeEventListener("mouseover", handleMouseOver);
-      document.head.removeChild(injectCursorStyles);
+      if (document.head.contains(injectCursorStyles)) {
+        document.head.removeChild(injectCursorStyles);
+      }
       document.documentElement.style.cursor = "auto";
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [position, isVisible]);
+  }, [position, isVisible, mounted]);
 
-  if (!isVisible) return null;
+  if (!mounted || !isVisible) return null;
 
   return (
-    <div className="hidden sm:block pointer-events-none fixed inset-0 z-[99999]">
+    <div className="block pointer-events-none fixed inset-0 z-[99999]">
       {/* ⚛️ Central Core Nucleus (Tracks Mouse Instantly) */}
       <div
         className="fixed top-0 left-0 w-2.5 h-2.5 bg-amber-500 rounded-full mix-blend-difference transition-transform duration-100 ease-out"
         style={{
           transform: `translate3d(${position.x}px, ${position.y}px, 0) translate(-50%, -50%) scale(${isHovered ? 1.8 : 1})`,
-          boxShadow: "0 0 8px #f59e0b",
+          boxShadow: "0 0 12px #f59e0b, 0 0 4px #f59e0b",
         }}
       />
 
       {/* 💫 Electron Ring 1 (Lagging Physics Link) */}
       <div
         id="atom-electron-1"
-        className="fixed top-0 left-0 rounded-full border border-amber-500/30 transition-all duration-75"
+        className="fixed top-0 left-0 rounded-full border border-amber-500/40 transition-all duration-75"
         style={{
           width: isHovered ? "48px" : "32px",
-          height: isHovered ? "16px" : "12px",
-          // Custom micro-pseudo dot representing the running electron on the ring profile
+          height: isHovered ? "18px" : "12px",
           background:
-            "radial-gradient(circle at 0% 50%, #f59e0b 2px, transparent 3px)",
+            "radial-gradient(circle at 0% 50%, #f59e0b 2.5px, transparent 3.5px)",
         }}
       />
 
@@ -121,10 +131,10 @@ export default function AtomCursor() {
         id="atom-electron-2"
         className="fixed top-0 left-0 rounded-full border border-amber-500/20 transition-all duration-75"
         style={{
-          width: isHovered ? "16px" : "12px",
+          width: isHovered ? "18px" : "12px",
           height: isHovered ? "48px" : "32px",
           background:
-            "radial-gradient(circle at 50% 0%, #d97706 2px, transparent 3px)",
+            "radial-gradient(circle at 50% 0%, #d97706 2.5px, transparent 3.5px)",
         }}
       />
     </div>
